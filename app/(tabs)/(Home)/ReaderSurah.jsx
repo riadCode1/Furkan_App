@@ -1,111 +1,75 @@
 import {
   View,
   Text,
-  Platform,
-  Dimensions,
-  Animated,
+  ScrollView,
   Image,
   TouchableOpacity,
- 
-  ScrollView,
-
+  Dimensions,
   StyleSheet,
-  
+  Modal,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router, useLocalSearchParams } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   AntDesign,
-  FontAwesome,
   Entypo,
+  FontAwesome,
   FontAwesome5,
 } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import SuratReader from "../../../components/SuratReader";
-import { dataArray } from "../../../constants/RecitersImages";
-import { fetchChater } from "../../API/QuranApi";
+import { dataArray } from "@/constants/RecitersImages";
 import { FlashList } from "@shopify/flash-list";
-
-import { useGlobalContext } from "@/context/GlobalProvider";
 import SearchBar from "@/components/SearchBar";
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { fetchChater } from "@/app/API/QuranApi";
+import SuratReader from "../../../components/SuratReader";
+import { fetchAudio } from "../../API/QuranApi";
 
+import ModalAudio from "../../../components/ModalAudio";
 
 let { width, height } = Dimensions.get("window");
 
 const ReaderSurah = () => {
- 
+  const params = useLocalSearchParams();
+  const { arab_name, name, id } = params;
+  const {
+    pauseAudio,
+    languages,
 
-  const [position, setPosition] = useState(0);
-  const [chapter, setchapter] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [idAudio, setIdAudio] = useState(null);
-  const [data, setData] = useState([]);
+    soundRef,
+
+    setIsPlaying,
+    isPlaying,
+    playSound,
+    setModalVisible,
+    modalVisible,
+    position,
+    setPosition,
+    duration,
+    currentTrackId,
+    setCurrentTrackId,
+    setDuration,
+  } = useGlobalContext();
+
+  const [chapters, setchapters] = useState([]);
+  const [dataAudio, setDataAudio] = useState([]);
+  const [loading, setloading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const [loading, setloading] = useState(false);
- 
-  const params = useLocalSearchParams();
-  const { arab_name, name, id } = params;
-  const router = useRouter();
-
-  const {
-    setModalVisible,
-    modalVisible,
-    reciter,
-    currentTrackId,
-    setCurrentTrackId,
-    soundRef,
-    SetBar,
-    languages,
-    reciterAR,
-    setReciterAR,
-    setLanguages,
-    setIDreader,
-    pauseAudio,
-    setChapterID,
-    chapterId,
-    setReciter,
-    isPlaying,
-    setIsPlaying,
-  } = useGlobalContext();
-  
-
-  const getChapter = async () => {
-    setloading(true); // Set loading to true before fetching
-    try {
-      const data = await fetchChater();
-      // console.log("got Chapter", data.chapters[1].name_arabic);
-
-      if (data && data.chapters) {
-        setchapter(data.chapters);
-      }
-    } catch (error) {
-      console.error("Error fetching chapters:", error); // Handle any errors
-    } finally {
-      setloading(false); // Set loading to false after the fetch attempt
-    }
-  };
-
 
   useEffect(() => {
     getChapter();
     fetchAudioUrl(id);
-    setReciter(name);
-    setReciterAR(arab_name);
-    setIDreader(id);
-    console.log(reciter);
 
     {
-      /*Search */
+      /*Search QUery */
     }
-
     if (searchQuery.length > 1) {
       setloading(true);
 
-      
       fetchChater(searchQuery)
         .then((suwarData) => {
           // Filter fetched recitations based on the search query
@@ -113,7 +77,6 @@ const ReaderSurah = () => {
             item.name_simple?.toLowerCase().includes(searchQuery.toLowerCase())
           );
 
-          
           setFilteredData(filteredRecitations);
           console.log("filter", filteredData);
         })
@@ -124,131 +87,112 @@ const ReaderSurah = () => {
           setloading(false);
         });
     }
+  }, []);
 
-    {
-      /*BAckground Audio */
-    }
-    const setupAudioMode = async () => {
-      await Audio.setAudioModeAsync({
-        staysActiveInBackground: true,
-        playsInSilentModeIOS: true,
-        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: true,
-      });
-    };
+  {
+    /*GetChapter */
+  }
 
-    setupAudioMode();
-  }, [searchQuery,name,arab_name,languages]);
-
-  const fetchAudioUrl = async (id) => {
+  const getChapter = async () => {
+    setloading(true); // Set loading to true before fetching
     try {
-      const response = await fetch(
-        `https://api.quran.com/api/v4/chapter_recitations/${id}`
-      );
-      const data = await response.json();
-      //console.log("data", data);
-      setData(data.audio_files);
-      console.log("data", data);
+      const data = await fetchChater();
+      // console.log("got Chapter", data.chapters[1].name_arabic);
 
-      // Get the audio for the first ayah in the Surah
-      return data;
+      if (data && data.chapters) {
+        setchapters(data.chapters);
+        console.log(data);
+      }
     } catch (error) {
-      console.error("Error fetching audio URL:", error);
+      console.error("Error fetching chapters:", error); // Handle any errors
+    } finally {
+      setloading(false); // Set loading to false after the fetch attempt
     }
   };
 
-  const playSound = async (uri, trackId) => {
+  {
+    /*GetAudio */
+  }
+
+  const fetchAudioUrl = async () => {
+    setloading(true); // Set loading to true before fetching
     try {
-      if (soundRef.current._loaded) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
+      const data = await fetchAudio(id);
+
+      if (data && data.audio_files) {
+        setDataAudio(data.audio_files);
       }
-
-      await soundRef.current.loadAsync({ uri });
-      await soundRef.current.playAsync();
-
-      // Set the current index in the list
-
-      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+      console.log("ch", data);
     } catch (error) {
-      console.error("Error playing sound:", error);
-    }
-    setCurrentTrackId(trackId);
-    setIsPlaying(true);
-    SetBar(true);
-    
-    setReciter(name);
-    setReciterAR(arab_name);
-    if (chapterId === 0) {
-      setChapterID(0);
-    } else {
-      setChapterID(data[trackId - 1].chapter_id);
+      console.error("Error fetching chapters:", error); // Handle any errors
+    } finally {
+      setloading(false); // Set loading to false after the fetch attempt
     }
   };
-
- 
-
-
-  // Function to handle playback status updates
-  const onPlaybackStatusUpdate = (status) => {
-    if (status.isLoaded) {
-      setPosition(status.positionMillis);
-      setDuration(status.durationMillis);
-      setIsPlaying(status.isPlaying);
-
-      // Check if the audio has finished playing
-      if (status.didJustFinish) {
-        nextSurah();
-      }
-    }
-  };
-
-  const handlePlay = () => {
-    setChapterID(0);
-    playSound(data[0].audio_url, data[0].chapter_id);
-  };
-
-  // Function to pause audio
 
   // Function to play the next surah
   const nextSurah = () => {
-    playSound(data[currentTrackId].audio_url, data[currentTrackId].chapter_id);
+    playSound(
+      dataAudio[currentTrackId].audio_url,
+      dataAudio[currentTrackId].chapter_id,
+      chapters[currentTrackId].name_simple,
+      name,
+      arab_name,
+      id
+    );
+  };
+
+  const playAuto = () => {
+    playSound(dataAudio[0].audio_url, dataAudio[0].chapter_id);
   };
 
   // Function to play the previous surah
   const previousSurah = async () => {
     playSound(
-      data[currentTrackId - 2].audio_url,
-      data[currentTrackId - 2].chapter_id
+      dataAudio[currentTrackId - 2].audio_url,
+      dataAudio[currentTrackId - 2].chapter_id,
+      chapters[currentTrackId - 2].name_simple,
+      name,
+      arab_name,
+      id
     );
   };
+  const stopAudio = async () => {
+    try {
+      if (soundRef.current && soundRef.current._loaded) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
 
-  {
-    /*SearchData */
-  }
+      // Reset audio player state
+      setIsPlaying(false);
+      setPosition(0);
+      setDuration(0);
+      setCurrentTrackId(null);
+    } catch (error) {
+      console.error("Error stopping audio:", error);
+    }
+  };
 
   return (
     <SafeAreaView className=" flex-1  bg-[#191845]">
       <ScrollView
         stickyHeaderIndices={[1]}
-      
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
-        <View className=" relative justify-center  ">
+        <View className="  justify-center   relative">
           <Image
-            resizeMode="cover"
-            className="absolute   w-full h-full "
             source={{
-              uri: dataArray[id]?.image
-                ? dataArray[id]?.image
-                : dataArray[3]?.image,
+              uri: dataArray[id]?.image || dataArray[3]?.image,
             }}
+            className="absolute  w-full h-full "
+            resizeMode="cover"
           />
 
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => router.navigate("Index")}
-            className="rounded-full z-10 items-center justify-center mt-10 ml-4  w-10 h-10 bg-[#373597]"
+            className="rounded-full items-center justify-center mt-10 ml-4  w-10 h-10 bg-[#373597]"
           >
             <AntDesign name="arrowleft" size={24} color="white" />
           </TouchableOpacity>
@@ -270,102 +214,87 @@ const ReaderSurah = () => {
                 {languages ? arab_name : name}
               </Text>
               <Text className=" text-gray-300 text-sm">
-                144 {languages ? "سورة" : "Surahs"}{" "}
+                114 {languages ? "سورة" : "Surahs"}{" "}
               </Text>
             </View>
 
-            <View className="flex-row items-center justify-center gap-x-5">
-              <TouchableOpacity>
-                <FontAwesome name="random" size={24} color="#00D1FF" />
+            {isPlaying ? (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={pauseAudio}
+                className="rounded-full items-center justify-center   w-12 h-12 bg-[#373597]"
+              >
+                <FontAwesome5 name="pause" size={20} color="#00D1FF" />
               </TouchableOpacity>
-
-              {isPlaying ? (
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={pauseAudio}
-                  className="rounded-full items-center justify-center   w-12 h-12 bg-[#373597]"
-                >
-                  <FontAwesome5 name="pause" size={20} color="#00D1FF" />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={handlePlay}
-                  className="rounded-full items-center justify-center   w-12 h-12 bg-[#373597]"
-                >
-                  <Entypo name="controller-play" size={24} color="#00D1FF" />
-                </TouchableOpacity>
-              )}
-            </View>
+            ) : (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={playAuto}
+                className="rounded-full items-center justify-center   w-12 h-12 bg-[#373597]"
+              >
+                <Entypo name="controller-play" size={24} color="#00D1FF" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
-        {/*searchbar */}
-
-        <View className="p-4  mb-4  ">
-          
-            <SearchBar
-              title="Surah"
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              filteredData={filteredData}
-            />
-          
-
-          <Text className="text-gray-500  text-lg font-normal">
-            {languages ? "تلاوة من قبل" : "Recited By"}
-            <Text className=" text-white font-bold">
+        <View className=" py-4 ">
+          <SearchBar
+            title={languages ? "ابحث عن سورة" : "Search Chapter"}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredData={filteredData}
+          />
+          <View className="  px-4 ">
+            <Text className="text-gray-500 text-lg font-normal">
               {" "}
-              {languages ? arab_name : name}{" "}
-            </Text>{" "}
-          </Text>
+              {languages ? "تلاوة سورة" : "Recite Chapter"} :
+            </Text>
+          </View>
         </View>
 
         {searchQuery.length > 1 ? (
           <FlashList
+            contentContainerStyle={{ paddingBottom: 100 }}
             data={filteredData}
-            contentContainerStyle={{ paddingBottom: 170 }}
-            estimatedItemSize={10}
+            estimatedItemSize={50}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <SuratReader
-                name={name}
-                name_arabic={item.name_arabic}
-                data={data}
-                id={id}
-                languages={languages}
-                playSound={playSound}
-                audio={item.audio_url}
-                chapter={chapter}
-                playing={isPlaying}
-                chapterID={item.id}
-                audioID={item.chapter_id}
-              />
+              <View>
+                <SuratReader
+                  chapteID={item.id}
+                  id={id}
+                  setIsPlaying={setIsPlaying}
+                  dataAudio={dataAudio}
+                  arab_name={arab_name}
+                  reciterName={name}
+                  chapterName={item.name_simple}
+                  chapterAr={item.name_arabic}
+                  playSound={playSound}
+                />
+              </View>
             )}
           />
-        ) : loading ? (
-          <Text className="text-white text-2xl">loading</Text>
         ) : (
           <FlashList
-            data={data}
-            contentContainerStyle={{ paddingBottom: 170 }}
-            estimatedItemSize={10}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            data={chapters}
+            estimatedItemSize={50}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <SuratReader
-                name={name}
-                data={data}
-                id={id}
-                languages={languages}
-                arab_reciter={arab_name}
-                playSound={playSound}
-                audio={item.audio_url}
-                name_arabic={item.name_arabic}
-                chapter={chapter}
-                playing={isPlaying}
-                chapterID={item.chapter_id}
-                audioID={item.chapter_id}
-              />
+              <View>
+                <SuratReader
+                  chapteID={item.id}
+                  id={id}
+                  setIsPlaying={setIsPlaying}
+                  dataAudio={dataAudio}
+                  reciterName={name}
+                  arab_name={arab_name}
+                  chapterAr={item.name_arabic}
+                  chapterName={item.name_simple}
+                  playSound={playSound}
+                />
+              </View>
             )}
           />
         )}
@@ -373,41 +302,31 @@ const ReaderSurah = () => {
 
       {/* Modal */}
 
-      {/* <View style={styles.centeredView}>
+      <View style={styles.centeredView}>
         <Modal
           animationType="slide"
           transparent={true}
+             onSwipeComplete={() => setModalVisible(false)}
+      swipeDirection="down"
           visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
+        
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <AudioModal
-                name={name}
-                arab_name={arab_name}
-                isPlaying={isPlaying}
-                nextSurah={nextSurah}
-                previousSurah={previousSurah}
-                currentSound={soundRef.current}
-                pauseAudio={pauseAudio}
+              <ModalAudio
                 duration={duration}
                 position={position}
-                chapter={chapterId}
-                idAudio={idAudio}
-                setModalVisible={setModalVisible}
+                setPosition={setPosition}
+                nextSurah={nextSurah}
+                previousSurah={previousSurah}
               />
             </View>
           </View>
         </Modal>
-      </View> */}
+      </View>
     </SafeAreaView>
   );
 };
-
-export default ReaderSurah;
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -424,3 +343,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#191845",
   },
 });
+
+export default ReaderSurah;

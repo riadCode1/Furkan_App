@@ -1,16 +1,17 @@
-import { View,Modal, StyleSheet, Keyboard, } from "react-native";
+import { View, StyleSheet, Keyboard, Text, } from "react-native";
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import { Octicons, AntDesign } from "@expo/vector-icons";
-import AudioModal from "@/components/AudioModal";
+
 
 
 import BottomBar from "@/components/BottomBar";
 import { useGlobalContext } from "../../context/GlobalProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Layout() {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -36,18 +37,13 @@ export default function Layout() {
     reciter,
     reciterAR,
     idReader,
-    position,
-     setPosition,
-    duration,
-    setDuration,
-    
-    SetBar,
+
+    setModalVisible,
+
     isPlaying,
     languages,
     chapterId,
     pauseAudio,
-    setModalVisible,
-    modalVisible,
   } = useGlobalContext();
   return (
     <View style={{ flex: 1 }}>
@@ -71,8 +67,8 @@ export default function Layout() {
             />
           ),
           tabBarLabelStyle: {
-            padding: 5,
-            position: "absolute",
+            
+            
           },
         }}
       >
@@ -135,10 +131,7 @@ export default function Layout() {
       {isKeyboardVisible ? (
         ""
       ) : (
-
-        
         <BottomBar
-          SetBar={SetBar}
           reciterAR={reciterAR}
           languages={languages}
           playing={isPlaying}
@@ -150,85 +143,8 @@ export default function Layout() {
         />
       )}
 
-      {/* Modal */}
-
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-        <AudioModal
-                name={reciter}
-                isPlaying={isPlaying}
-               position={position}
-               duration={duration}
-               setDuration={setDuration}
-               setPosition={setPosition}
-               pauseAudio={pauseAudio}
-                setModalVisible={setModalVisible}
-              />
-        </View>
-      </Modal>
-
-
-
-
-      {/* <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <AudioModal
-                name={reciter}
-                isPlaying={isPlaying}
-                nextSurah={nextSurah}
-                previousSurah={previousSurah}
-                currentSound={soundRef.current}
-                pauseAudio={pauseAudio}
-                duration={duration}
-                position={position}
-                chapter={chapterId}
-                idAudio={idAudio}
-                setModalVisible={setModalVisible}
-              />
-            </View>
-          </View>
-        </Modal>
-      </View> */}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
 
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // semi-transparent background
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor:"#191845",
-  },
-  modalContent: {
-    width: '100%', // full width
-    height: '100%', // full height
-    backgroundColor: 'white',
-    padding: 20,
-    backgroundColor:"#191845",
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalText: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-});

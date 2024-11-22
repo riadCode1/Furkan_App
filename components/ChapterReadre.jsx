@@ -4,38 +4,94 @@ import Dropmenu from "./Dropmenu";
 import { AntDesign } from "@expo/vector-icons";
 
 import { dataArray } from "../constants/RecitersImages";
+import { useGlobalContext } from "../context/GlobalProvider";
 
 const ChapterReadre = ({
   playSound,
- 
+  chapterAr,
   arab_name,
   name,
   Chapterid,
   IdReciter,
   chapterName,
+  Audio,
+  setAudio,
 }) => {
+
+  
+  const generateRandomNumber = () => Math.floor(Math.random() * 20) + 1; // Random number between 1 and 20
+  const Id = generateRandomNumber();
+  const recitePlus = Id + 1;
+  const reciteMinus = Id + 1;
+
+  console.log(recitePlus)
+  const handlePlay=()=>{
+    playSound(chapterAudio,Chapterid,chapterName,name,arab_name,IdReciter)
+
+   
+    
+}
   
   
+  const {languages} = useGlobalContext();
 
   useEffect(() => {
     getAudio();
-  }, []);
+    getAudioPlus()
+    getAudioMinus()
+  }, [recitePlus]);
 
 
   const [chapterAudio, setAudioChapter] = useState([]);
 
-  const getAudio = async (id) => {
+  const getAudio = async () => {
     try {
       const response = await fetch(
         `https://api.quran.com/api/v4/chapter_recitations/${IdReciter}/${Chapterid}`
       );
       const data = await response.json();
-      console.log("data", data);
-      setAudioChapter(data);
+      
+      setAudioChapter(data?.audio_file?.audio_url);
       
     
 
-      // Get the audio for the first ayah in the Surah
+      
+      return data;
+    } catch (error) {
+      console.error("Error fetching audio URL:", error);
+    }
+  };
+
+  const getAudioPlus = async () => {
+    try {
+      const response = await fetch(
+        `https://api.quran.com/api/v4/chapter_recitations/${recitePlus}/${Chapterid}`
+      );
+      const data = await response.json();
+      console.log("data-", data);
+      setAudio(data?.audio_file?.audio_url);
+      
+    
+
+      
+      return data;
+    } catch (error) {
+      console.error("Error fetching audio URL:", error);
+    }
+  };
+
+  const getAudioMinus = async () => {
+    try {
+      const response = await fetch(
+        `https://api.quran.com/api/v4/chapter_recitations/${reciteMinus}/${Chapterid}`
+      );
+      const data = await response.json();
+      console.log("data+", data);
+      setAudio(data?.audio_file?.audio_url);
+      
+    
+
+      
       return data;
     } catch (error) {
       console.error("Error fetching audio URL:", error);
@@ -46,7 +102,7 @@ const ChapterReadre = ({
   return (
     <View className=" flex-row w-full items-center justify-between px-4  py-2  ">
       <TouchableOpacity
-        onPress={()=> playSound(chapterAudio.audio_file.audio_url,Chapterid,name,IdReciter)}
+        onPress={handlePlay}
         activeOpacity={0.7}
         className="gap-x-3 flex-row"
       >
@@ -63,16 +119,18 @@ const ChapterReadre = ({
         </View>
 
         <View className="  items-start">
-          <Text className="text-white font-bold text-base">{arab_name}</Text>
+          <Text className="text-white font-bold text-base">
+            {languages?arab_name:name}
+            </Text>
 
           <Text numberOfLines={1} className=" text-gray-400 text-xs">
-            {chapterName}
+               {languages?chapterAr:chapterName}
           </Text>
         </View>
       </TouchableOpacity>
 
       <View className="flex-row gap-x-[30px] mr-3 justify-center items-center">
-        <TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.7}>
           <AntDesign name="download" size={24} color="white" />
         </TouchableOpacity>
         <View className=" w-0 ">

@@ -17,10 +17,10 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
     <View>
       <Animated.View
         style={{ width: width * 0.93 }}
-        className="border rounded-lg  px-4 bg-white h-[48px]    items-center flex-row justify-between"
+        className="border rounded-lg  px-4 bg-white h-[48px] self-center    items-center flex-row justify-between"
       >
         <TextInput
-          placeholder={`Search ${title}`}
+          placeholder={` ${title}`}
           placeholderTextColor={"#99A5FF"}
           onChangeText={(text) => setSearchQuery(text)}
           value={searchQuery}

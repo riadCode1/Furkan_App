@@ -96,7 +96,7 @@ const PlayList = () => {
           currentSound.unloadAsync();
         }
       : undefined;
-  }, [currentSound]);
+  }, [currentSound,playlist]);
 
   return (
     <View>
@@ -117,8 +117,8 @@ const PlayList = () => {
                   resizeMode="contain"
                   className=" w-full h-full overflow-hidden"
                   source={{
-                    uri: dataArray[item.id]?.image
-                      ? dataArray[item.id]?.image
+                    uri: dataArray[item.reciterID]?.image
+                      ? dataArray[item.reciterID]?.image
                       : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
                   }}
                 />
@@ -130,7 +130,7 @@ const PlayList = () => {
                 </Text>
 
                 <Text numberOfLines={1} className=" text-gray-400 text-xs">
-                  {item?.name}
+                  {item?.reciterName}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -140,7 +140,7 @@ const PlayList = () => {
                 <AntDesign name="download" size={24} color="white" />
               </TouchableOpacity>
               <View className=" w-0 ">
-                <Dropmenu RemoveItem={true} item={item.id} Remove={Remove} />
+                <Dropmenu RemoveItem={true} item={item.chapter} Remove={Remove} />
               </View>
             </View>
           </View>

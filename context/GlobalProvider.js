@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
 
+import {Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
@@ -13,11 +13,11 @@ const GlobalProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [chapterId, setChapterID] = useState(null);
-  const [currentTrackId, setCurrentTrackId] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [bar, SetBar] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentTrackId, setCurrentTrackId] = useState(null);
+ 
   const [chapterAudio, setAudioChapter] = useState([]);
   const soundRef = useRef(new Audio.Sound());
  
@@ -34,6 +34,63 @@ const GlobalProvider = ({ children }) => {
     }
   };
 
+  const playSound = async (uri, trackId,chapterName,name,arabName,id) => {
+    try {
+      if (soundRef.current._loaded) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+
+      await soundRef.current.loadAsync({ uri });
+      await soundRef.current.playAsync();
+
+      // Set the current index in the list
+
+      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    } catch (error) {
+      
+      console.error("Error playing sound:", error);
+      
+    }
+    setCurrentTrackId(trackId);
+    setChapterID(chapterName);
+    setIsPlaying(true);
+    setReciter(name);
+    setIDreader(id);
+    setReciterAR(arabName)
+    
+   
+  };
+  console.log(position)
+  // Function to handle playback status updates
+  const onPlaybackStatusUpdate = (status) => {
+    if (status.isLoaded) {
+      setPosition(status.positionMillis);
+      setDuration(status.durationMillis);
+      setIsPlaying(status.isPlaying);
+
+      // Check if the audio has finished playing
+      if (status.didJustFinish) {
+        nextSurah()
+      }
+    }
+  };
+
+  useEffect(() => {
+    const setupAudioMode = async () => {
+      await Audio.setAudioModeAsync({
+        staysActiveInBackground: true,
+        playsInSilentModeIOS: true,
+        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: true,
+      });
+    };
+
+    setupAudioMode();
+  }, []);
+
 
 
   
@@ -45,15 +102,14 @@ const GlobalProvider = ({ children }) => {
         reciter,
         setReciter,
         pauseAudio,
-        currentTrackId,
-        setCurrentTrackId,
+        playSound,
         soundRef,
-        SetBar,
-        bar,
-        setDuration,
-        duration,
-        setPosition,
+        currentTrackId,
+         setCurrentTrackId,
         position,
+         setPosition,
+         duration,
+          setDuration,
         reciterAR,
          setReciterAR,
         idReader,
@@ -69,6 +125,7 @@ const GlobalProvider = ({ children }) => {
         setIsPlaying,
         modalVisible,
         setModalVisible
+        
       }}
     >
       {children}

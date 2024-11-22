@@ -9,7 +9,7 @@ const _layout = () => {
         
        
       
-      <Stack.Screen name="Readers" options={{ headerShown: false }} />
+      <Stack.Screen name="AudioModal" options={{ headerShown: false }} />
       </Stack>
 
       <StatusBar backgroundColor='#161622' style='light' />

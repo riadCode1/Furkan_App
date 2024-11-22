@@ -21,15 +21,15 @@ import Listen from "../../../components/Listen";
 import Details from "../../../components/Details";
 import Read from "../../../components/Read";
 import { NewData } from "../../../constants/NewData";
-
+import { useGlobalContext } from "../../../context/GlobalProvider";
 
 let { width, height } = Dimensions.get("window");
 
 const Readers = () => {
   const params = useLocalSearchParams();
-  const { name, Chapterid, arab_name ,chapter_arab} = params;
+  const { name, Chapterid, arab_name, chapter_arab } = params;
   const router = useRouter();
-
+  const { setLanguages, languages } = useGlobalContext();
   const [activeButton, setActiveButton] = useState("button1");
 
   const [quranData, setQuranData] = useState([]);
@@ -138,7 +138,7 @@ const Readers = () => {
 
   return (
     <Provider>
-      <SafeAreaView stickyHeaderIndices={[2]} className=" flex-1  bg-[#191845]">
+      <SafeAreaView className=" flex-1  bg-[#191845]">
         <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
           <View className="  justify-center   relative">
             <Image
@@ -148,6 +148,7 @@ const Readers = () => {
             />
 
             <TouchableOpacity
+            activeOpacity={0.7}
               onPress={() => router.navigate("Index")}
               className="rounded-full items-center justify-center mt-10 ml-4  w-10 h-10 bg-[#373597]"
             >
@@ -168,19 +169,19 @@ const Readers = () => {
                   numberOfLines={1}
                   className="text-white font-bold  text-xl "
                 >
-                   {chapter_arab} 
+                  {chapter_arab}
                 </Text>
                 <Text className=" text-gray-300 text-sm">
-                  Chapter {Chapterid}/114
+                   {languages ? `السورة ${Chapterid} `  : "Chapter"}/114
                 </Text>
               </View>
 
               <View className="flex-row items-center justify-center gap-x-5">
-                <TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7}>
                   <FontAwesome name="random" size={24} color="#00D1FF" />
                 </TouchableOpacity>
 
-                <TouchableOpacity className="rounded-full items-center justify-center   w-12 h-12 bg-[#373597]">
+                <TouchableOpacity activeOpacity={0.7} className="rounded-full items-center justify-center   w-12 h-12 bg-[#373597]">
                   <Entypo name="controller-play" size={24} color="#00D1FF" />
                 </TouchableOpacity>
               </View>
@@ -192,7 +193,9 @@ const Readers = () => {
                 onPress={() => handleButtonPress("button1")}
                 className=" justify-center items-center  "
               >
-                <Text className="text-gray-400  mb-3 ">Listen</Text>
+                <Text className="text-gray-400  mb-3 ">
+                   {languages ? "استمع " : "Listen"}
+                </Text>
                 <View
                   style={[{ backgroundColor: getBackgroundColor("button1") }]}
                   className="  w-28 h-[1px] rounded  "
@@ -201,10 +204,10 @@ const Readers = () => {
 
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => handleButtonPress("button2")}
+                onPress={() => handleButtonPress("button2")}  تفاصيل
                 className=" justify-center items-center  "
               >
-                <Text className="text-gray-400  mb-3 ">Details</Text>
+                <Text className="text-gray-400  mb-3 ">{languages ? "تفاصيل " : "Details"}</Text>
                 <View
                   style={[{ backgroundColor: getBackgroundColor("button2") }]}
                   className="  w-28 h-[1px] rounded  "
@@ -216,7 +219,7 @@ const Readers = () => {
                 onPress={() => handleButtonPress("button3")}
                 className=" justify-center items-center  "
               >
-                <Text className="text-gray-400  mb-3 ">Read</Text>
+                <Text className="text-gray-400  mb-3 ">{languages ? "اقراء " : "Read"}</Text>
                 <View
                   style={[{ backgroundColor: getBackgroundColor("button3") }]}
                   className="  w-28 h-[1px] rounded  "
@@ -227,7 +230,8 @@ const Readers = () => {
 
           {activeButton === "button1" && (
             <Listen
-              chapterName={chapter_arab}
+              chapterName={name}
+              chapterAr={chapter_arab}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               filteredData={filteredData}

@@ -20,6 +20,7 @@ const ReadingSurah = ({chapter_arab,arab_name,languages, name, Chapterid }) => {
 
   return (
     <TouchableOpacity
+    activeOpacity={0.7}
       onPress={handleNavigate}
       className=" mr-[12px] w-[104px]   "
     >

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Modal, Alert, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -7,11 +7,21 @@ import All from "../../components/All";
 import PlayList from "../../components/PlayList";
 import Tracks from "../../components/Tracks";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ModalAudio from "../../components/ModalAudio";
+import { useGlobalContext } from "@/context/GlobalProvider";
+
 
 const Library = () => {
   const [activeButton, setActiveButton] = useState("button1");
   const [savedSurahs, setSavedSurahs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const {
+    setLanguages,
+    languages,
+    modalVisible,
+    setModalVisible
+  } = useGlobalContext();
 
   useEffect(() => {
     // Retrieve the saved data from AsyncStorage
@@ -152,8 +162,26 @@ const Library = () => {
           {activeButton === "button3" && <Tracks />}
         </View>
       </View>
+       {/* Modal */}
+
+      
     </SafeAreaView>
   );
 };
 
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+
+    height: "100%",
+    width: "100%",
+  },
+  modalView: {
+    height: "100%",
+    width: "100%",
+    backgroundColor: "#191845",
+  },
+});
 export default Library;

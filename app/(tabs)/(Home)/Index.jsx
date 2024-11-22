@@ -7,6 +7,8 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  StyleSheet,
+  Modal,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
@@ -16,6 +18,7 @@ import ReadingSurah from "../../../components/ReadingSurah";
 import { fetchChater, fetchSuwar } from "../../API/QuranApi";
 import { NewData } from "../../../constants/NewData";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import ModalAudio from "../../../components/ModalAudio";
 
 
 
@@ -27,10 +30,13 @@ const Index = () => {
   const {
     setLanguages,
     languages,
+    isPlaying,
+    modalVisible,
+    setModalVisible
   } = useGlobalContext();
  
   
- 
+
   
   useEffect(() => {
     getReciter();
@@ -148,8 +154,28 @@ const Index = () => {
       </View>
       
       </ScrollView>
+
+     
+
+      
     </SafeAreaView>
   );
 };
 
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+
+    height: "100%",
+    width: "100%",
+  },
+  modalView: {
+    height: "100%",
+    width: "100%",
+    backgroundColor: "#191845",
+  },
+});
 export default Index;

@@ -4,19 +4,32 @@ import { View, StyleSheet, Text, Alert } from "react-native";
 import { Menu, IconButton } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Dropmenu = ({setColor, chapterID, name, chapter, Remove, item, RemoveItem,mp3 }) => {
-  const musicList = [{ id: chapterID, name: name, chapter: chapter, uri:mp3 }];
+const Dropmenu = ({reciterName, chapterID, name, chapter, Remove, item, RemoveItem,mp3,reciterID }) => {
+
+
+  const musicList = [{
+      id: chapterID,
+      name: name,
+      chapter: chapter,
+      uri: mp3 ,
+      reciterName:reciterName,
+      reciterID:reciterID
+    
+    
+    
+    }];
 
   const [visible, setVisible] = useState(false);
 
   const openMenu = () =>{
     
     setVisible(true)
-    setColor(true)
+    
   };
 
-  const closeMenu = () => {setVisible(false)
-    setColor(false)
+  const closeMenu = () => {
+    setVisible(false)
+    
   };
 
   const saveToPlaylist = async (musicList) => {

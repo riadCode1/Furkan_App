@@ -5,45 +5,20 @@ import Dropmenu from "./Dropmenu";
 import { dataArray } from "@/constants/RecitersImages";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
-const SuratReader = ({
-  name,
-  audioID,
-  chapter,
-  audio,
-  data,
-  id,
-  name_arabic,
-  playSound,
-  arab_reciter,
-  chapterID,
-  languages,
-}) => {
+const SuratReader = ({setIsPlaying,chapterName,languages,chapterAr,reciterName,arab_name,playSound,dataAudio,chapteID,id}) => {
 
+ 
 
-  const [color, setColor] = useState(false);
-  const {
-   
-    setChapterID,
-    setIDreader,
-   
-  } = useGlobalContext();
-  const handlePlay =()=>{
-
-    playSound(
-      data[chapterID - 1].audio_url,
-      data[chapterID - 1].chapter_id,
-      
-    )
-
-    setChapterID(
-      data[chapterID - 1].chapter_id,
-    )
-  }
+const handlePlay=()=>{
+  playSound(dataAudio[chapteID-1]?.audio_url,chapteID,chapterName,reciterName,arab_name,id)
+ 
+}
+ 
   
 
   return (
     <View
-       style={color ? styles.Color : ""}
+       
       className=" flex-row w-full items-center justify-between px-4  py-2  "
     >
       <TouchableOpacity
@@ -65,13 +40,13 @@ const SuratReader = ({
 
         <View className="  items-start">
           <Text className="text-white font-bold text-base">
-            {languages?chapter[audioID - 1]?.name_arabic: chapter[audioID - 1]?.name_simple }
+            {languages?chapterAr:chapterName}
             
           </Text>
 
           <Text numberOfLines={2} className=" text-gray-400 text-xs">
             
-            {languages?arab_reciter:name}
+          {languages ? arab_name : reciterName}
           </Text>
         </View>
       </TouchableOpacity>
@@ -82,11 +57,9 @@ const SuratReader = ({
         </TouchableOpacity>
         <View className=" w-0 ">
           <Dropmenu
-            chapter={chapter[audioID - 1]?.name_simple}
-            name={name}
-            mp3={audio}
-            setColor={setColor}
-            chapterID={chapterID}
+             chapter={chapterName}
+             reciterName={reciterName}
+              reciterID={id}
           />
         </View>
       </View>

@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/index.jsx", "app/(tabs)/Home.jsx", "app/(tabs)/_layout.jsx", "app/(tabs)/Setting.jsx", "app/(tabs)/Search.jsx", "app/_layout.jsx", "app/(tabs)/Lebrary.ts, ","app/(tabs)/Library.jsx", "components/Dropmenu.tsx", "app/(tabs)/(Home)/ReaderSurah.jsx"  ]
+, "app/index.jsx", "app/(tabs)/Home.jsx", "app/(tabs)/_layout.jsx", "app/(tabs)/Setting.jsx", "app/(tabs)/Search.jsx", "app/_layout.jsx", "app/(tabs)/Lebrary.ts, ","app/(tabs)/Library.jsx", "components/Dropmenu.tsx", "app/(tabs)/(Home)/ReaderSurah.tsx", "components/ReadingSurah.jsx", "components/SuratReader.jsx"  ]
 }

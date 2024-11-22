@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet,  } from "react-native";
+import { View, Text, StyleSheet, Modal, Alert,  } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FlashList } from "@shopify/flash-list";
 import ChapterReadre from "./ChapterReadre";
@@ -6,112 +6,71 @@ import { useGlobalContext } from "../context/GlobalProvider";
 
 import SearchBar from "./SearchBar";
 import {Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import ModalAudio from "./ModalAudio";
 
 const Listen = ({
   searchQuery,
   setSearchQuery,
   filteredData,
   title,
+  chapterAr,
   quranData,
   Chapterid,
   name,
   chapterName,
 }) => {
   
-  
+  const [Audio, setAudio] = useState([]);
+  const [read, setRead] = useState(1);
 
   
 
   const {
-    setModalVisible,
-    modalVisible,
-    duration,
-     setDuration,
-    reciter,
-    currentTrackId,
-    setCurrentTrackId,
+    
+    
+    
+    setReciterAR,
+    
     soundRef,
-    SetBar,
-    position,
-     setPosition,
-    pauseAudio,
+    
+    playSound,
+    currentTrackId,
+     setCurrentTrackId,
     setChapterID,
     setIDreader,
     setReciter,
     isPlaying,
     setIsPlaying,
+    setPosition,
+    setDuration,
+    duration,
+    position,
+    modalVisible,
+    setModalVisible
   } = useGlobalContext();
 
- 
-  const playSound = async (uri, trackId, names, IdReciter) => {
-    try {
-      if (soundRef.current._loaded) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      }
+  
+  console.log("url",Audio)
 
-      await soundRef.current.loadAsync({ uri });
-      await soundRef.current.playAsync();
-
-      // Set the current index in the list
-
-      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-    } catch (error) {
-      console.error("Error playing sound:", error);
-    }
-    setCurrentTrackId(trackId);
-    setIsPlaying(true);
-    SetBar(true);
-    setIDreader(IdReciter)
-    setReciter(names);
-
-    setChapterID(Chapterid);
-  };
+  
 
  
   // play on the Background
   useEffect(() => {
-    const setupAudioMode = async () => {
-      await Audio.setAudioModeAsync({
-        staysActiveInBackground: true,
-        playsInSilentModeIOS: true,
-        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: true,
-      });
-    };
+   
+  }, [searchQuery]);
 
-    setupAudioMode();
-  }, []);
+  
 
-  // Function to handle playback status updates
-  const onPlaybackStatusUpdate = (status) => {
-    if (status.isLoaded) {
-      setPosition(status.positionMillis);
-      setDuration(status.durationMillis);
-      setIsPlaying(status.isPlaying);
-
-      // Check if the audio has finished playing
-      if (status.didJustFinish) {
-        nextSurah();
-      }
-    }
-  };
-
-  // Function to pause audio
 
   // Function to play the next surah
   const nextSurah = () => {
-    playSound();
+    playSound(Audio,Chapterid,chapterName,name,"arab_name","IdReciter");
   };
 
   // Function to play the previous surah
   const previousSurah = async () => {
-    playSound(
-      data[currentTrackId - 2].audio_url,
-      data[currentTrackId - 2].chapter_id
-    );
+    playSound(Audio,Chapterid,chapterName,name,"arab_name","IdReciter");
   };
 
   return (
@@ -133,7 +92,7 @@ const Listen = ({
         <FlashList
           contentContainerStyle={{ paddingBottom: 100 }}
           data={filteredData}
-          estimatedItemSize={100}
+          estimatedItemSize={50}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <ChapterReadre
@@ -144,6 +103,7 @@ const Listen = ({
               Chapterid={Chapterid}
               playSound={playSound}
               chapterName={chapterName}
+              chapterAr={chapterAr}
             />
           )}
         />
@@ -159,10 +119,14 @@ const Listen = ({
                 className="text-white"
                 name={item.reciter_name}
                 IdReciter={item.id}
+                Audio={Audio}
+                setAudio={setAudio}
+                setCurrentTrackId={setCurrentTrackId}
                 arab_name={item.translated_name.name}
                 Chapterid={Chapterid}
                 playSound={playSound}
                 chapterName={chapterName}
+                chapterAr={chapterAr}
               />
             </>
           )}
@@ -170,7 +134,28 @@ const Listen = ({
       )}
 
       {/* Modal */}
+      
 
+     <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <ModalAudio
+                duration={duration}
+                position={position}
+                setPosition={setPosition}
+                nextSurah={nextSurah}
+                previousSurah={previousSurah}
+              />
+            </View>
+          </View>
+        </Modal>
+      </View>
       
     </View>
   );
