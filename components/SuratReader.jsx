@@ -5,12 +5,12 @@ import Dropmenu from "./Dropmenu";
 import { dataArray } from "@/constants/RecitersImages";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
-const SuratReader = ({setIsPlaying,chapterName,languages,chapterAr,reciterName,arab_name,playSound,dataAudio,chapteID,id}) => {
+const SuratReader = ({setIsPlaying,chapterName,chapterAr,reciterName,arab_name,playSound,dataAudio,chapteID,id}) => {
 
- 
+  const {languages, setLanguages } = useGlobalContext();
 
 const handlePlay=()=>{
-  playSound(dataAudio[chapteID-1]?.audio_url,chapteID,chapterName,reciterName,arab_name,id)
+  playSound(dataAudio[chapteID-1]?.audio_url,chapteID,chapterName,reciterName,arab_name,id,chapterAr)
  
 }
  
@@ -40,7 +40,7 @@ const handlePlay=()=>{
 
         <View className="  items-start">
           <Text className="text-white font-bold text-base">
-            {languages?chapterAr:chapterName}
+            {languages? chapterAr:chapterName}
             
           </Text>
 

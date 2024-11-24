@@ -38,7 +38,7 @@ const ReaderSurah = () => {
     pauseAudio,
     languages,
 
-    soundRef,
+    
 
     setIsPlaying,
     isPlaying,
@@ -49,8 +49,7 @@ const ReaderSurah = () => {
     setPosition,
     duration,
     currentTrackId,
-    setCurrentTrackId,
-    setDuration,
+    
   } = useGlobalContext();
 
   const [chapters, setchapters] = useState([]);
@@ -138,7 +137,8 @@ const ReaderSurah = () => {
       chapters[currentTrackId].name_simple,
       name,
       arab_name,
-      id
+      id,
+      chapters[currentTrackId].name_arabic,
     );
   };
 
@@ -154,25 +154,26 @@ const ReaderSurah = () => {
       chapters[currentTrackId - 2].name_simple,
       name,
       arab_name,
-      id
+      id,
+      chapters[currentTrackId - 2].name_arabic,
     );
   };
-  const stopAudio = async () => {
-    try {
-      if (soundRef.current && soundRef.current._loaded) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      }
+  // const stopAudio = async () => {
+  //   try {
+  //     if (soundRef.current && soundRef.current._loaded) {
+  //       await soundRef.current.stopAsync();
+  //       await soundRef.current.unloadAsync();
+  //     }
 
-      // Reset audio player state
-      setIsPlaying(false);
-      setPosition(0);
-      setDuration(0);
-      setCurrentTrackId(null);
-    } catch (error) {
-      console.error("Error stopping audio:", error);
-    }
-  };
+  //     // Reset audio player state
+  //     setIsPlaying(false);
+  //     setPosition(0);
+  //     setDuration(0);
+  //     setCurrentTrackId(null);
+  //   } catch (error) {
+  //     console.error("Error stopping audio:", error);
+  //   }
+  // };
 
   return (
     <SafeAreaView className=" flex-1  bg-[#191845]">

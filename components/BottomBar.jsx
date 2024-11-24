@@ -19,10 +19,11 @@ const BottomBar = ({
   pauseAudio,
   name,
   reciterAR,
+  arabicCH,
   languages,
   idReader,
 }) => {
- 
+  
  
   useEffect(() => {
     
@@ -50,7 +51,7 @@ const BottomBar = ({
 
         <View className=" ml-4 mt-2 ">
           <Text className="text-base text-white font-[600]">
-           {chapterId}
+           {languages?arabicCH:chapterId}
           </Text>
           <Text className="text-gray-400 text-xs"> {languages?reciterAR:name} </Text>
         </View>

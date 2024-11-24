@@ -30,7 +30,7 @@ export const dataArray = [
     {
       id: 5,
       name: " Hani ar-Rifai",
-      image: "https://islamicbulletin.org/wp-content/uploads/hani-ar-rifai-1024x1024.jpg"
+      image: "https://api2.quran-pro.com/images/hani-ar-rifai/hani-ar-rifai-medium.webp?version=1686737997907"
     },
     {
       id: 6,

@@ -169,7 +169,7 @@ const Readers = () => {
                   numberOfLines={1}
                   className="text-white font-bold  text-xl "
                 >
-                  {chapter_arab}
+                  {languages?chapter_arab:name}
                 </Text>
                 <Text className=" text-gray-300 text-sm">
                    {languages ? `السورة ${Chapterid} `  : "Chapter"}/114

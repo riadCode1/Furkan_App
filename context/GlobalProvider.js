@@ -9,10 +9,11 @@ const GlobalProvider = ({ children }) => {
   const [reciter, setReciter] = useState("");
   const [reciterAR, setReciterAR] = useState("");
   const [languages, setLanguages] = useState(false);
-  const [idReader, setIDreader] = useState("");
+  const [idReader, setIDreader] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [chapterId, setChapterID] = useState(null);
+  const [arabicCH, setArabicCH] = useState(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -34,7 +35,7 @@ const GlobalProvider = ({ children }) => {
     }
   };
 
-  const playSound = async (uri, trackId,chapterName,name,arabName,id) => {
+  const playSound = async (uri, trackId,chapterName,name,arabName,id,arabicCh) => {
     try {
       if (soundRef.current._loaded) {
         await soundRef.current.stopAsync();
@@ -54,6 +55,7 @@ const GlobalProvider = ({ children }) => {
     }
     setCurrentTrackId(trackId);
     setChapterID(chapterName);
+    setArabicCH(arabicCh)
     setIsPlaying(true);
     setReciter(name);
     setIDreader(id);
@@ -124,7 +126,9 @@ const GlobalProvider = ({ children }) => {
         setChapterID,
         setIsPlaying,
         modalVisible,
-        setModalVisible
+        setModalVisible,
+        arabicCH,
+         setArabicCH
         
       }}
     >

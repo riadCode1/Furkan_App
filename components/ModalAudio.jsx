@@ -18,9 +18,13 @@ const ModalAudio = ({nextSurah, previousSurah,}) => {
 
 
   const { setModalVisible, chapterId,setPosition,duration,
-    position, reciter, reciterAR,isPlaying, languages,pauseAudio } = useGlobalContext();
-    
+    position, reciter, reciterAR,isPlaying, languages,pauseAudio,idReader,arabicCH } = useGlobalContext();
+    console.log(idReader)
 
+    useEffect(() => {
+      
+    }, [reciter,languages])
+    
   const formatTime = (millis) => {
     const hours = Math.floor(millis / 3600000); // Convert to hours
     const minutes = Math.floor((millis % 3600000) / 60000); // Calculate remaining minutes
@@ -57,7 +61,7 @@ const ModalAudio = ({nextSurah, previousSurah,}) => {
             <Image className="w-full h-full" source={require("../assets/images/moon.png")} />
           </View>
           <View className="items-center mt-6">
-            <Text className="text-white text-2xl font-bold">{chapterId}</Text>
+            <Text className="text-white text-2xl font-bold">{languages?arabicCH:chapterId}</Text>
             <Text className="text-gray-400 text-base">{languages ? reciterAR : reciter}</Text>
           </View>
         </View>

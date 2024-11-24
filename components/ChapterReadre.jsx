@@ -15,94 +15,109 @@ const ChapterReadre = ({
   IdReciter,
   chapterName,
   Audio,
+  setRead,
+  read,
   setAudio,
+  handleReciterSelect,
+  
 }) => {
 
-  
-  const generateRandomNumber = () => Math.floor(Math.random() * 20) + 1; // Random number between 1 and 20
-  const Id = generateRandomNumber();
-  const recitePlus = Id + 1;
-  const reciteMinus = Id + 1;
+  const {
+    
+    
+    idReader
+  } = useGlobalContext();
 
-  console.log(recitePlus)
-  const handlePlay=()=>{
-    playSound(chapterAudio,Chapterid,chapterName,name,arab_name,IdReciter)
+  
+//   const generateRandomNumber = () => Math.floor(Math.random() * 20) +1; // Random number between 1 and 20
+//   const Id = generateRandomNumber();
+//   const recitePlus = Id + 1;
+//   const reciteMinus = Id + 1;
+
+//   const [recite, setRecite] = useState(null);
+// console.log("read" ,idReader)
+ 
+//   const handlePlay=()=>{
+//     playSound(chapterAudio,Chapterid,chapterName,name,arab_name,IdReciter)
+    
 
    
     
-}
+// }
   
   
   const {languages} = useGlobalContext();
 
-  useEffect(() => {
-    getAudio();
-    getAudioPlus()
-    getAudioMinus()
-  }, [recitePlus]);
+  // useEffect(() => {
+  //   getAudio();
+  //   getAudioPlus()
+  //   getAudioMinus()
+  // }, [idReader,read]);
 
 
-  const [chapterAudio, setAudioChapter] = useState([]);
+  // const [chapterAudio, setAudioChapter] = useState([]);
 
-  const getAudio = async () => {
-    try {
-      const response = await fetch(
-        `https://api.quran.com/api/v4/chapter_recitations/${IdReciter}/${Chapterid}`
-      );
-      const data = await response.json();
-      
-      setAudioChapter(data?.audio_file?.audio_url);
-      
-    
-
-      
-      return data;
-    } catch (error) {
-      console.error("Error fetching audio URL:", error);
-    }
-  };
-
-  const getAudioPlus = async () => {
-    try {
-      const response = await fetch(
-        `https://api.quran.com/api/v4/chapter_recitations/${recitePlus}/${Chapterid}`
-      );
-      const data = await response.json();
-      console.log("data-", data);
-      setAudio(data?.audio_file?.audio_url);
+  // const getAudio = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://api.quran.com/api/v4/chapter_recitations/${IdReciter}/${Chapterid}`
+  //     );
+  //     const data = await response.json();
+  //     setRead(idReader)
+  //     console.log(idReader)
+  //     setAudioChapter(data?.audio_file?.audio_url);
       
     
 
       
-      return data;
-    } catch (error) {
-      console.error("Error fetching audio URL:", error);
-    }
-  };
+  //     return data;
+  //   } catch (error) {
+  //     console.error("Error fetching audio URL:", error);
+  //   }
+  // };
 
-  const getAudioMinus = async () => {
-    try {
-      const response = await fetch(
-        `https://api.quran.com/api/v4/chapter_recitations/${reciteMinus}/${Chapterid}`
-      );
-      const data = await response.json();
-      console.log("data+", data);
-      setAudio(data?.audio_file?.audio_url);
+  // const getAudioPlus = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://api.quran.com/api/v4/chapter_recitations/${read}/${Chapterid}`
+  //     );
+  //     const data = await response.json();
+      
+    
+  //     setAudio(data?.audio_file?.audio_url);
+     
+    
+
+      
+  //     return data;
+  //   } catch (error) {
+  //     console.error("Error fetching audio URL:", error);
+  //   }
+  // };
+
+  // const getAudioMinus = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://api.quran.com/api/v4/chapter_recitations/${reciteMinus}/${Chapterid}`
+  //     );
+  //     const data = await response.json();
+      
+  //     setAudio(data?.audio_file?.audio_url);
       
     
 
       
-      return data;
-    } catch (error) {
-      console.error("Error fetching audio URL:", error);
-    }
-  };
+  //     return data;
+  //   } catch (error) {
+  //     console.error("Error fetching audio URL:", error);
+  //   }
+  // };
 
 
   return (
     <View className=" flex-row w-full items-center justify-between px-4  py-2  ">
       <TouchableOpacity
-        onPress={handlePlay}
+        onPress={()=>handleReciterSelect(IdReciter)}
         activeOpacity={0.7}
         className="gap-x-3 flex-row"
       >

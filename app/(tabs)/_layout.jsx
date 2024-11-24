@@ -37,7 +37,7 @@ export default function Layout() {
     reciter,
     reciterAR,
     idReader,
-
+    arabicCH,
     setModalVisible,
 
     isPlaying,
@@ -139,6 +139,7 @@ export default function Layout() {
           idReader={idReader}
           pauseAudio={pauseAudio}
           chapterId={chapterId}
+          arabicCH={arabicCH}
           name={reciter}
         />
       )}

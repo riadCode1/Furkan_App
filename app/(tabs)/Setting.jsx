@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import Slider from '@react-native-community/slider'; // Ensure correct import
+import { View, Text, StyleSheet, Button } from 'react-native'
+import React from 'react'
+import { useGlobalContext } from '@/context/GlobalProvider';
 
-const AudioProgressBar = () => {
-  const [value, setValue] = useState(0);
 
-  const handleSliderChange = (sliderValue) => {
-    setValue(sliderValue);
-  };
 
+
+
+const Setting = () => {
+
+
+
+  const toggleState = () => {
+  setLanguages(prevState => !prevState); // Toggle the current state
+};
+  const {languages, setLanguages } = useGlobalContext();
   return (
     <View style={styles.container}>
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={100}
-        step={1}
-        value={value}
-        onValueChange={handleSliderChange}
-        minimumTrackTintColor="#1EB1FC"
-        maximumTrackTintColor="#d3d3d3"
-        thumbTintColor="#1EB1FC"
+      <Text style={styles.text}>State: {languages.toString()}</Text>
+      <Button
+        title={languages ? 'Switch to English' : 'Switch to Arabic'}
+        onPress={toggleState}
       />
     </View>
   );
@@ -32,10 +31,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  slider: {
-    width: 300,
-    height: 40,
+  text: {
+    fontSize: 20,
+    marginBottom: 20,
   },
 });
 
-export default AudioProgressBar;
+export default Setting
